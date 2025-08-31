@@ -2,100 +2,183 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <title>Ali's Quiz</title>
+  <title>Ali's Quiz — Fixed wrongTries</title>
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
   <style>
-    body { font-family: Arial, sans-serif; text-align: center; background: #f0f0f0; margin: 0; padding: 0; }
-    .page { display: none; padding: 40px; }
-    .active { display: block; }
-    h1 { font-size: 2em; }
-    h2 { font-size: 1.5em; margin: 20px 0; }
-    button { padding: 20px 40px; font-size: 1.2em; margin: 10px; cursor: pointer; border-radius: 10px; border: none; background: #4CAF50; color: white; }
-    button:hover { background: #45a049; }
-    .confetti { position: fixed; top: 0; left: 0; width: 100%; height: 100%; pointer-events: none; overflow: hidden; }
-    .confetti-piece { position: absolute; width: 10px; height: 10px; background: red; animation: fall 3s linear infinite; }
-    @keyframes fall { to { transform: translateY(100vh) rotate(360deg); opacity: 0; } }
-    img { max-width: 300px; margin-top: 20px; border-radius: 15px; }
+    :root{--bg:#f0f0f0;--card:#ffffff;--accent:#4caf50}
+    *{box-sizing:border-box}
+    body{font-family:Inter,system-ui,Arial,sans-serif;background:var(--bg);margin:0;color:#111}
+    .wrap{max-width:760px;margin:40px auto;padding:20px}
+    .page{display:none;background:var(--card);border-radius:12px;padding:30px;box-shadow:0 8px 30px rgba(0,0,0,.06)}
+    .page.active{display:block}
+    h1{margin:0 0 8px;font-size:24px}
+    h2{margin:6px 0 18px;font-size:20px;color:#333}
+    .btn{display:inline-block;padding:14px 22px;border-radius:10px;border:0;background:var(--accent);color:#fff;font-weight:700;cursor:pointer;margin:8px;font-size:16px}
+    .btn.secondary{background:#1976d2}
+    .muted{color:#666;font-size:14px}
+    .msg{color:#b91c1c;font-weight:700;margin-top:12px}
+    .placeholder{width:320px;height:220px;border-radius:10px;background:#eee;border:2px dashed #ccc;display:inline-flex;align-items:center;justify-content:center;color:#888;margin:10px auto}
+    .confetti{position:fixed;left:0;top:0;width:100%;height:100%;pointer-events:none;overflow:hidden}
+    .confetti > i{position:absolute;width:10px;height:14px;border-radius:2px;animation:fall 3s linear forwards}
+    @keyframes fall{to{transform:translateY(110vh) rotate(520deg);opacity:0}}
+    img.responsive{max-width:320px;border-radius:10px}
   </style>
 </head>
 <body>
+  <div class="wrap">
+    <!-- PAGE 1 -->
+    <section id="page1" class="page active">
+      <h1>Welcome Ali's Quiz</h1>
+      <p class="muted">Press button to start quiz</p>
+      <button class="btn" onclick="goToPage('page2')">Start Quiz</button>
+    </section>
 
-  <div id="page1" class="page active">
-    <h1>Welcome Ali's Quiz</h1>
-    <p>Press button to start quiz</p>
-    <button onclick="goToPage('page2')">Start Quiz</button>
-  </div>
+    <!-- PAGE 2 -->
+    <section id="page2" class="page">
+      <h2>Who is the best person?</h2>
+      <div>
+        <button class="btn" onclick="answerAli()">Ali</button>
+        <button class="btn" onclick="answerAli()">Ali</button>
+        <button class="btn" onclick="answerAli()">Ali</button>
+        <button class="btn" onclick="answerAli()">Ali</button>
+      </div>
+    </section>
 
-  <div id="page2" class="page">
-    <h2>Who is the best person?</h2>
-    <button onclick="correctAnswer()">Ali</button>
-    <button onclick="correctAnswer()">Ali</button>
-    <button onclick="correctAnswer()">Ali</button>
-    <button onclick="correctAnswer()">Ali</button>
-  </div>
+    <!-- PAGE 3 -->
+    <section id="page3" class="page">
+      <h2>I am trying to believe you are Human</h2>
+    </section>
 
-  <div id="page3" class="page">
-    <h2>I am trying to believe you are Human</h2>
-  </div>
+    <!-- PAGE 4: math question -->
+    <section id="page4" class="page">
+      <h2>18 + 1?</h2>
+      <div>
+        <button class="btn" onclick="checkAnswer(18)">18</button>
+        <button class="btn" onclick="checkAnswer(19)">19</button>
+        <button class="btn" onclick="checkAnswer(20)">20</button>
+        <button class="btn" onclick="checkAnswer(21)">21</button>
+      </div>
+      <div id="msg4" class="msg" aria-live="polite" style="display:none">Try again!</div>
+    </section>
 
-  <div id="page4" class="page">
-    <h2>18 + 1?</h2>
-    <button onclick="checkAnswer(18)">18</button>
-    <button onclick="checkAnswer(19)">19</button>
-    <button onclick="checkAnswer(20)">20</button>
-    <button onclick="checkAnswer(21)">21</button>
-  </div>
+    <!-- PAGE 6: shown after 2 wrong tries; stays until correct -->
+    <section id="page6" class="page">
+      <h2>Are you really human?</h2>
+      <img src="./images.jpeg" alt="Are you really human?" class="responsive" />
+   
+      <div>
+        <button class="btn" onclick="checkAnswer(18)">18</button>
+        <button class="btn" onclick="checkAnswer(19)">19</button>
+        <button class="btn" onclick="checkAnswer(20)">20</button>
+        <button class="btn" onclick="checkAnswer(21)">21</button>
+      </div>
+      <div id="msg6" class="msg" style="display:none">Try again — you must select 19 to proceed.</div>
+    </section>
 
-  <div id="page5" class="page">
-    <h2>Do you know who else is 19?</h2>
-    <button onclick="goToPage('celebration')">No</button>
-  </div>
+    <!-- PAGE 5: follow-up -->
+    <section id="page5" class="page">
+      <h2>Do you know who else is 19?</h2>
+      <button class="btn" onclick="goToPage('celebration')">No</button>
+    </section>
 
-  <div id="celebration" class="page">
-    <h2>Nargiz's Age!</h2>
-    <div class="confetti" id="confetti"></div>
-    <img src="./IMG-20250831-WA0080.jpg" alt="Birthday" />
-    <h2>Happy Birthday!</h2>
-    <audio id="song" autoplay>
-      <source src="https://www2.cs.uic.edu/~i101/SoundFiles/StarWars60.wav" type="audio/wav">
-    </audio>
+    <!-- CELEBRATION -->
+    <section id="celebration" class="page">
+      <h2>Nargiz's Age!</h2>
+      <div class="confetti" id="confetti"></div>
+      <!-- replace the src below with your data URL or image path -->
+      <img class="responsive" id="finalImage" src="./IMG-20250831-WA0080.jpg" alt="Celebrant" />
+      <h2>Happy Birthday!</h2>
+      <audio id="song" preload="auto">
+        <!-- replace with an actual happy-birthday mp3 or keep as-is -->
+        <source src="https://www2.cs.uic.edu/~i101/SoundFiles/StarWars60.wav" type="audio/wav">
+      </audio>
+    </section>
   </div>
 
   <script>
-    function goToPage(id) {
-      document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
-      document.getElementById(id).classList.add('active');
-      if (id === 'celebration') {
+    // Persistent mistake counter
+    let wrongTries = 0;
+
+    // Utility to switch pages by their id
+    function goToPage(id){
+      document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));
+      const el = document.getElementById(id);
+      if(el) el.classList.add('active');
+      // when celebration shown, auto play song and confetti
+      if(id === 'celebration'){
         launchConfetti();
-        document.getElementById('song').play();
+        const s = document.getElementById('song');
+        if(s){ s.play().catch(()=>{}); }
       }
     }
 
-    function correctAnswer() {
+    // After pressing Ali — show the human-check message then move on
+    function answerAli(){
       goToPage('page3');
-      setTimeout(() => { goToPage('page4'); }, 3000);
+      setTimeout(()=> goToPage('page4'), 3000);
     }
 
-    function checkAnswer(ans) {
-      if (ans === 19) {
+    // Show a temporary message in a specific element
+    function flashMessage(elId, text, ms=1400){
+      const el = document.getElementById(elId);
+      if(!el) return;
+      el.textContent = text;
+      el.style.display = 'block';
+      clearTimeout(el._t);
+      el._t = setTimeout(()=>{ el.style.display = 'none'; }, ms);
+    }
+
+    // Main answer handler used on page4 and page6 buttons
+    function checkAnswer(ans){
+      const current = document.querySelector('.page.active')?.id;
+
+      // If user is on the special "page6" (after 2 wrong tries): only allow progress on 19
+      if(current === 'page6'){
+        if(ans === 19){
+          wrongTries = 0; // reset
+          goToPage('page5');
+        } else {
+          // stay on page6 until correct
+          flashMessage('msg6', 'Try again — you must select 19 to proceed.', 1800);
+        }
+        return;
+      }
+
+      // Normal flow (page4)
+      if(ans === 19){
+        wrongTries = 0; // reset on correct
         goToPage('page5');
       } else {
-        alert('Try again!');
+        wrongTries++;
+        if(wrongTries >= 2){
+          // show the special human-check page which will not disappear until user answers 19
+          goToPage('page6');
+        } else {
+          // first mistake: gentle feedback
+          flashMessage('msg4','Try again!',1200);
+        }
       }
     }
 
-    function launchConfetti() {
-      const confettiContainer = document.getElementById('confetti');
-      for (let i = 0; i < 100; i++) {
-        const piece = document.createElement('div');
-        piece.classList.add('confetti-piece');
-        piece.style.left = Math.random() * 100 + 'vw';
-        piece.style.backgroundColor = `hsl(${Math.random() * 360}, 100%, 50%)`;
-        piece.style.animationDuration = 2 + Math.random() * 3 + 's';
-        confettiContainer.appendChild(piece);
+    // Confetti simple generator
+    function launchConfetti(){
+      const wrap = document.getElementById('confetti');
+      if(!wrap) return;
+      wrap.innerHTML = '';
+      const W = window.innerWidth;
+      const N = 120;
+      for(let i=0;i<N;i++){
+        const el = document.createElement('i');
+        el.style.left = Math.random()*W + 'px';
+        el.style.background = `hsl(${Math.random()*360},90%,60%)`;
+        el.style.animationDelay = (Math.random()*0.6)+'s';
+        el.style.animationDuration = (2.4 + Math.random()*1.8)+'s';
+        wrap.appendChild(el);
       }
     }
+
+    // Helpful: expose functions for console debugging
+    window._debug = { goToPage, checkAnswer };
   </script>
 </body>
 </html>
-
-
